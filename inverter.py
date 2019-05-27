@@ -34,7 +34,7 @@ class Inverter:
             tfidfDict[word] = count/total_num_words * math.log(self.corpus.get_corpus_length()/(count + 1))
             
         for token in tokenized:
-            self.invertedDict[token][url] = tfidfDict[token]
+            self.invertedDict[token.lower()][url] = tfidfDict[token]
     
     def get_html_text(self, url, url_file):
         f = open(url_file, "rb")
