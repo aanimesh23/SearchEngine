@@ -86,9 +86,9 @@ class Inverter:
             dir = loc[0]
             file = loc[1]
             url_file = os.path.join(".", WEBPAGES_RAW_NAME, dir, file)
-            if url_file is not None and counter < 999:
+            if url_file is not None:
                 counter += 1
-                print(url)
+                print(url, "---------", counter)
                 url, url_text = self.get_html_text(url, url_file)
                 self.calculate_word_count(url, url_text)
 
@@ -107,7 +107,8 @@ class Inverter:
     def get_tfidfDict(self):
         for key, val in self.tfidfDict.items():
             docFreqPair = sorted(val.items(), key = lambda x: x[1], reverse = True)
-            print(key, docFreqPair, "\n\n")
+            #print(key, docFreqPair, "\n\n")
+        return self.tfidfDict
 
 if __name__ == '__main__':
     i = Inverter()
