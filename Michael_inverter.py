@@ -23,6 +23,7 @@ class Inverter:
         self.lemmatizer = WordNetLemmatizer()
         self.stopWords = set(stopwords.words('english'))
         self.porterStemmer = PorterStemmer()
+        self.KEYWORDS = dict()
         
     def calculate_word_count(self, url, url_text):
         wordCountDict = defaultdict(int) #count number of words, used to calculate td-idf
@@ -50,14 +51,10 @@ class Inverter:
         print(self.corpus.get_corpus_length())
         for term, dictionary in self.wordCountDict.items():
             for url, freq in dictionary.items():
-                # print("Term - ",term)
-                # print("Freq - ",freq)
-                # print("LOG FREQ - ",math.log(freq))
-                # print("DF - ", self.documentFrequencyDict[term])
-                # print(math.log(10))
-                # print("EVERYTHING ELSE - ", math.log(self.corpus.get_corpus_length()/self.documentFrequencyDict[term]))
                 weight = (1 + math.log(freq)) * (math.log(self.corpus.get_corpus_length()/self.documentFrequencyDict[term]))
                 self.tfidfDict[term][url] = weight
+                if term in self.KEYWORDS and url in self.KEYWORDS[term]:
+                    self.tfidfDict[term][url] += 5
 
     def fetch_best_urls(self, query):
         url_scores = defaultdict(float)
@@ -69,7 +66,20 @@ class Inverter:
 
         url_scores = sorted(url_scores.items(), key = lambda x: x[1], reverse = True)
         return url_scores
-    
+    def fix_keywords(self, keyword_string):
+        l = set()
+        s = re.sub(r'[^a-zA-Z0-9]+', ' ', keyword_string)
+        s = s.split(' ')
+        if len(s) > 0:
+            for word in s:
+                word = word.strip()
+                word = word.lower()
+                word = self.lemmatizer.lemmatize(word)
+                word = self.porterStemmer.stem(word)
+                if word != '':
+                    l.add(word)
+        return l
+        
     def get_html_text(self, url, url_file):
         f = open(url_file, "rb")
         content = f.read()
@@ -78,6 +88,22 @@ class Inverter:
         #get rid of all the script stuff
         for script in soup(["script", "style"]):
             script.extract()
+
+        keys = ''
+        for content in soup.find_all('title'):
+            content = content.get_text()
+            keys += content + " "
+
+        for content in soup.find_all('h1'):
+            content = content.get_text()
+            keys += content + " "
+
+        key_set = self.fix_keywords(keys)
+        for key in key_set:
+            if key in self.KEYWORDS.keys():
+                self.KEYWORDS[key].append(url)
+            else:
+                self.KEYWORDS[key] = [url]
 
         #get the rest of the url text
         url_text = soup.get_text()
@@ -102,7 +128,7 @@ class Inverter:
             dir = loc[0]
             file = loc[1]
             url_file = os.path.join(".", WEBPAGES_RAW_NAME, dir, file)
-            if url_file is not None and counter < 9999:
+            if url_file is not None and counter < 100:
                 counter += 1
                 print(url, "---------", counter)
                 url, url_text = self.get_html_text(url, url_file)
@@ -134,6 +160,6 @@ if __name__ == '__main__':
     inverted = i.get_tfidfDict()
     best_urls = i.fetch_best_urls("Informatics")
     print(best_urls)
-    with open('invertedIndex.json', 'wb') as f:
+    with open('invertedIndex.json', 'w') as f:
         json.dump(inverted, f)
 
