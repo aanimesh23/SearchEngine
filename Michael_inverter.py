@@ -86,9 +86,9 @@ class Inverter:
             dir = loc[0]
             file = loc[1]
             url_file = os.path.join(".", WEBPAGES_RAW_NAME, dir, file)
-            if url_file is not None:
+            if url_file is not None and counter < 999:
                 counter += 1
-                print(url,'--------------------------------' ,counter)
+                print(url)
                 url, url_text = self.get_html_text(url, url_file)
                 self.calculate_word_count(url, url_text)
 
@@ -107,14 +107,14 @@ class Inverter:
     def get_tfidfDict(self):
         for key, val in self.tfidfDict.items():
             docFreqPair = sorted(val.items(), key = lambda x: x[1], reverse = True)
-            #print(key, docFreqPair, "\n\n")
-        return self.tfidfDict
+            print(key, docFreqPair, "\n\n")
 
 if __name__ == '__main__':
     i = Inverter()
     i.start_indexing()
     i.calculate_document_frequency()
     i.calculate_tfidf()
+    i.get_tfidfDict()
     inverted = i.get_tfidfDict()
     with open("invertedIndex.pickle", 'wb') as handle:
         pickle.dump(inverted, handle, protocol=pickle.HIGHEST_PROTOCOL)
