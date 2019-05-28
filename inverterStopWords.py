@@ -30,10 +30,11 @@ class Inverter:
         
         tokenized = re.split('[^a-zA-z0-9]+', url_text)
         for token in tokenized:
-            if token not in self.stopWords:
+            if token not in self.stopwords:
                 token = token.lower()
                 token = self.lemmatizer.lemmatize(token)
                 token = self.porterStemmer.stem(token)
+                porterstemmer
                 self.tokenSet.add(token)
                 total_num_words += 1
 
