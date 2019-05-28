@@ -104,7 +104,7 @@ class Inverter:
             url_file = os.path.join(".", WEBPAGES_RAW_NAME, dir, file)
             if url_file is not None and counter < 9999:
                 counter += 1
-                print(url,'--------------------------------' ,counter)
+                print(url, "---------", counter)
                 url, url_text = self.get_html_text(url, url_file)
                 self.calculate_word_count(url, url_text)
 
@@ -131,6 +131,7 @@ if __name__ == '__main__':
     i.start_indexing()
     i.calculate_document_frequency()
     i.calculate_tfidf()
+    i.get_tfidfDict()
     inverted = i.get_tfidfDict()
     best_urls = i.fetch_best_urls("Informatics")
     print(best_urls)
