@@ -131,9 +131,9 @@ if __name__ == '__main__':
     i.start_indexing()
     i.calculate_document_frequency()
     i.calculate_tfidf()
-    i.get_tfidfDict()
     inverted = i.get_tfidfDict()
     best_urls = i.fetch_best_urls("Informatics")
     print(best_urls)
-    # with open("invertedIndex.pickle", 'wb') as handle:
-    #     pickle.dump(inverted, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    with open('invertedIndex.json', 'wb') as f:
+        json.dump(inverted, f)
+
