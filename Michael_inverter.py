@@ -1,4 +1,5 @@
-
+import json
+import os
 from corpus import Corpus
 from collections import defaultdict
 from bs4 import BeautifulSoup
@@ -72,13 +73,20 @@ class Inverter:
 
     def start_indexing(self):
         #using good.txt from WebCrawler instead of going through the whole corpus
-        #print(self.corpus.url_file_map)
         counter = 0
-
-        for url in self.corpus.url_file_map.keys():
+        # The corpus directory name
+        WEBPAGES_RAW_NAME = "WEBPAGES_RAW"
+        # The corpus JSON mapping file
+        JSON_FILE_NAME = os.path.join(".", WEBPAGES_RAW_NAME, "bookkeeping.json")
+        file_url_map = json.load(open(JSON_FILE_NAME), encoding="utf-8")
+        #print(file_url_map)
+        for loc, url in file_url_map.items():
             url = url.strip()
-            url_file = self.corpus.get_file_name(url)
-            if url_file is not None:
+            loc = loc.split("/")
+            dir = loc[0]
+            file = loc[1]
+            url_file = os.path.join(".", WEBPAGES_RAW_NAME, dir, file)
+            if url_file is not None and counter < 999:
                 counter += 1
                 print(url)
                 url, url_text = self.get_html_text(url, url_file)
@@ -101,12 +109,12 @@ class Inverter:
             docFreqPair = sorted(val.items(), key = lambda x: x[1], reverse = True)
             print(key, docFreqPair, "\n\n")
 
-# if __name__ == '__main__':
-i = Inverter()
-i.start_indexing()
-i.calculate_document_frequency()
-i.calculate_tfidf()
-i.get_tfidfDict()
-inverted = i.get_tfidfDict()
-with open("invertedIndex.pickle", 'wb') as handle:
-    pickle.dump(inverted, handle, protocol=pickle.HIGHEST_PROTOCOL)
+if __name__ == '__main__':
+    i = Inverter()
+    i.start_indexing()
+    i.calculate_document_frequency()
+    i.calculate_tfidf()
+    i.get_tfidfDict()
+    inverted = i.get_tfidfDict()
+    with open("invertedIndex.pickle", 'wb') as handle:
+        pickle.dump(inverted, handle, protocol=pickle.HIGHEST_PROTOCOL)
