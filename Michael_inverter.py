@@ -1,8 +1,10 @@
+
 from corpus import Corpus
 from collections import defaultdict
 from bs4 import BeautifulSoup
 import re
 import math
+import pickle
 
 class Inverter:
     """
@@ -36,13 +38,20 @@ class Inverter:
             self.documentFrequencyDict[term] = len(dictionary)
 
     def calculate_tfidf(self):
+        print(self.corpus.get_corpus_length())
         for term, dictionary in self.wordCountDict.items():
             for url, freq in dictionary.items():
+                # print("Term - ",term)
+                # print("Freq - ",freq)
+                # print("LOG FREQ - ",math.log(freq))
+                # print("DF - ", self.documentFrequencyDict[term])
+                # print(math.log(10))
+                # print("EVERYTHING ELSE - ", math.log(self.corpus.get_corpus_length()/self.documentFrequencyDict[term]))
                 weight = (1 + math.log(freq)) * (math.log(self.corpus.get_corpus_length()/self.documentFrequencyDict[term]))
                 self.tfidfDict[term][url] = weight
 
     def fetch_best_urls(self, query):
-        tokenized
+        pass
     
     def get_html_text(self, url, url_file):
         f = open(url_file, "rb")
@@ -63,13 +72,13 @@ class Inverter:
 
     def start_indexing(self):
         #using good.txt from WebCrawler instead of going through the whole corpus
-        good_urls = open("good.txt", "r")
+        #print(self.corpus.url_file_map)
         counter = 0
 
-        for url in good_urls.readlines():
+        for url in self.corpus.url_file_map.keys():
             url = url.strip()
             url_file = self.corpus.get_file_name(url)
-            if url_file is not None and counter < 9:
+            if url_file is not None:
                 counter += 1
                 print(url)
                 url, url_text = self.get_html_text(url, url_file)
@@ -92,9 +101,12 @@ class Inverter:
             docFreqPair = sorted(val.items(), key = lambda x: x[1], reverse = True)
             print(key, docFreqPair, "\n\n")
 
-if __name__ == '__main__':
-    i = Inverter()
-    i.start_indexing()
-    i.calculate_document_frequency()
-    i.calculate_tfidf()
-    i.get_tfidfDict()
+# if __name__ == '__main__':
+i = Inverter()
+i.start_indexing()
+i.calculate_document_frequency()
+i.calculate_tfidf()
+i.get_tfidfDict()
+inverted = i.get_tfidfDict()
+with open("invertedIndex.pickle", 'wb') as handle:
+    pickle.dump(inverted, handle, protocol=pickle.HIGHEST_PROTOCOL)
