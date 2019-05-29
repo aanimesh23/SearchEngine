@@ -1,4 +1,5 @@
 import json
+from corpus import Corpus
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer, PorterStemmer
 from collections import defaultdict
@@ -9,11 +10,12 @@ class Retreiver:
     This class creates an inverted index of all tokens extracted from the given urls
     """
     def __init__(self):
-    	self.invertedIndex = {}
-    	self.sorted_urls = {}
-    	self.lemmatizer = WordNetLemmatizer()
-    	self.stopWords = set(stopwords.words('english'))
-    	self.porterStemmer = PorterStemmer()
+        self.corpus = Corpus()
+        self.invertedIndex = {}
+        self.sorted_urls = {}
+        self.lemmatizer = WordNetLemmatizer()
+        self.stopWords = set(stopwords.words('english'))
+        self.porterStemmer = PorterStemmer()
 
     def open_inverted_index(self, filename):
     	json_file = open(filename)
@@ -34,20 +36,41 @@ class Retreiver:
     					url_scores[url] += tfidf
 
     	url_scores = sorted(url_scores.items(), key = lambda x: x[1], reverse = True)
-    	self.sorted_urls = url_scores
+    	return url_scores
 
-    def get_top_urls(self):
-    	urlLength = len(self.sorted_urls)
-    	if urlLength < 20:
-    		print(self.sorted_urls)
+    def get_top_urls(self, sorted_urls, max = 20):
+    	urlLength = len(sorted_urls)
+    	if urlLength < max:
+    		print(sorted_urls)
     	else:
-    		i = 1
-    		while i <= 20:
-	    		for url,value in self.sorted_urls:
-	    			print(i, url)
-	    			i+=1
+            i = 1
+            for url,value in sorted_urls:
+                if (i <= max):
+                    print(i, url, "------------", value)
+                    i+=1
+                else:
+                    break
 
-r = Retreiver()
-r.open_inverted_index("invertedIndex.json")
-r.retreive_urls("donald bren")
-r.get_top_urls()
+    def queries(self):
+        while True:
+            s = str(input("Input Search Query\n"))
+            if s == '':
+                continue
+            if s == ' ':
+                continue
+            if s == 'exit':
+                break
+            l = r.retreive_urls(s)
+            r.get_top_urls(l)
+            print("\n\n")
+
+
+
+if __name__ == '__main__':
+    r = Retreiver()
+    r.open_inverted_index("invertedIndex.json")
+    l = r.retreive_urls("Mondego")
+    r.get_top_urls(l)
+
+
+    r.queries()
