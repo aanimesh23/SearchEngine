@@ -16,7 +16,6 @@ class Retreiver:
         self.lemmatizer = WordNetLemmatizer()
         self.stopWords = set(stopwords.words('english'))
         self.porterStemmer = PorterStemmer()
-        self.top_urls = []
 
     def open_inverted_index(self, filename):
         json_file = open(filename)
@@ -40,7 +39,6 @@ class Retreiver:
         return url_scores
 
     def get_top_urls(self, sorted_urls, max = 20):
-        self.top_urls = []
         urlLength = len(sorted_urls)
         if urlLength < max:
             print(sorted_urls)
@@ -49,13 +47,29 @@ class Retreiver:
             for url,value in sorted_urls:
                 if (i <= max):
                     print(i, url, "------------", value)
-                    self.top_urls.append(url)
                     i+=1
                 else:
                     break
 
-    def list_top_urls(self):
-        return self.top_urls
+    def list_top_urls(self, query):
+        top_urls = []
+        max_urls = 20
+        sorted_urls = self.retrieve_urls(query)
+        url_length = len(sorted_urls)
+        
+        if url_length < max_urls:
+            for url in sorted_urls:
+                top_urls.append(url)
+        else:
+            i = 1
+            for url in sorted_urls:
+                if (i < max_urls):
+                    top_urls.append(url)
+                    i += 1
+                else:
+                    break
+        return top_urls, len(top_urls)
+        
 
     def queries(self):
         while True:
@@ -76,4 +90,3 @@ if __name__ == '__main__':
     r = Retreiver()
     r.open_inverted_index("invertedIndex.json")
     r.queries()
-    top_search_urls = r.list_top_urls()
