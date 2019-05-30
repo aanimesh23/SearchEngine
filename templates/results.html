@@ -43,17 +43,32 @@
 <body>
 
 <img src="static/logo.png" width="155" height="110">
-<input type="text" id="myInput" placeholder="Search ICS sites.." title="Type in a search query">
+<form action="/results" method="post">
+<input type="text" id="myInput" name='searchTerm' placeholder="Search ICS sites.." title="Type in a search query">
+</form>
 <ul id="myUL">
-  <li><a href="#">Search result 1</a></li>
-  <li><a href="#">Search result 2</a></li>
+  <li><a href="http://{{ res1 }}">{{ res1 }}</a></li>
+  <li><a href="http://{{ res2 }}">{{ res2 }}</a></li>
 
-  <li><a href="#">Search result 3</a></li>
-  <li><a href="#">Search result 4</a></li>
+  <li><a href="http://{{ res3 }}">{{ res3 }}</a></li>
+  <li><a href="http://{{ res4 }}">{{ res4 }}</a></li>
 
-  <li><a href="#">Search result 5</a></li>
-  <li><a href="#">Search result 6</a></li>
-  <li><a href="#">Search result etc.</a></li>
+  <li><a href="http://{{ res5 }}">{{ res5 }}</a></li>
+  <li><a href="http://{{ res6 }}">{{ res6 }}</a></li>
+  <li><a href="http://{{ res7 }}">{{ res7 }}</a></li>
+  <li><a href="http://{{ res8 }}">{{ res8 }}</a></li>
+  <li><a href="http://{{ res9 }}">{{ res9 }}</a></li>
+  <li><a href="http://{{ res10 }}">{{ res10 }}</a></li>
+  <li><a href="http://{{ res11 }}">{{ res11 }}</a></li>
+  <li><a href="http://{{ res12 }}">{{ res12 }}</a></li>
+  <li><a href="http://{{ res13 }}">{{ res13 }}</a></li>
+  <li><a href="http://{{ res14 }}">{{ res14 }}</a></li>
+  <li><a href="http://{{ res15 }}">{{ res15 }}</a></li>
+  <li><a href="http://{{ res16 }}">{{ res16 }}</a></li>
+  <li><a href="http://{{ res17 }}">{{ res17 }}</a></li>
+  <li><a href="http://{{ res18 }}">{{ res18 }}</a></li>
+  <li><a href="http://{{ res19 }}">{{ res19 }}</a></li>
+  <li><a href="http://{{ res20 }}">{{ res20 }}</a></li>
 </ul>
 
 </body>

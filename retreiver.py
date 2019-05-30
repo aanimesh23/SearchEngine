@@ -54,15 +54,15 @@ class Retreiver:
     def list_top_urls(self, query):
         top_urls = []
         max_urls = 20
-        sorted_urls = self.retrieve_urls(query)
+        sorted_urls = self.retreive_urls(query)
         url_length = len(sorted_urls)
         
         if url_length < max_urls:
-            for url in sorted_urls:
+            for url, value in sorted_urls:
                 top_urls.append(url)
         else:
-            i = 1
-            for url in sorted_urls:
+            i = 0
+            for url, value in sorted_urls:
                 if (i < max_urls):
                     top_urls.append(url)
                     i += 1
