@@ -822,7 +822,7 @@ button {
   -ms-flex-pack: center;
       justify-content: center;
   font-family: 'Poppins', sans-serif;
-  background: "static/bg2.png";
+  background: url("static/bg.png");
   background-position: bottom right;
   background-repeat: no-repeat;
   background-size: 100%;
