@@ -69,8 +69,4 @@ class Retreiver:
 if __name__ == '__main__':
     r = Retreiver()
     r.open_inverted_index("invertedIndex.json")
-    l = r.retreive_urls("Mondego")
-    r.get_top_urls(l)
-
-
     r.queries()
