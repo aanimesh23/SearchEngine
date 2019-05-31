@@ -1,3 +1,7 @@
+#Animesh Agrawal    animesha    50254531
+#Micheal Kirk       kirkmc      49847974
+#Rachel Lam         rslam       24554220
+
 import json
 from corpus import Corpus
 from nltk.corpus import stopwords

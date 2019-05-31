@@ -1,3 +1,7 @@
+#Animesh Agrawal    animesha    50254531
+#Micheal Kirk       kirkmc      49847974
+#Rachel Lam         rslam       24554220
+
 import json
 import os
 from corpus import Corpus
@@ -18,8 +22,6 @@ class Inverter:
         self.wordCountDict = defaultdict(dict)
         self.documentFrequencyDict = dict()
         self.tfidfDict = defaultdict(dict)
-        self.invertedDict = defaultdict(dict)
-        self.tokenSet = set()
         self.lemmatizer = WordNetLemmatizer()
         self.stopWords = set(stopwords.words('english'))
         self.porterStemmer = PorterStemmer()
@@ -38,7 +40,6 @@ class Inverter:
                 token = token.lower()
                 token = self.lemmatizer.lemmatize(token)
                 token = self.porterStemmer.stem(token)
-                self.tokenSet.add(token)
                 total_num_words += 1
 
                 if token in self.wordCountDict and url in self.wordCountDict[token]:
@@ -181,9 +182,6 @@ class Inverter:
                 print(url, "---------", counter)
                 url, url_text = self.get_html_text(url, url_file)
                 self.calculate_word_count(url, url_text)
-
-    def get_invertedDict(self):
-        return self.invertedDict
     
     def get_wordCountDict(self):
         for key, val in self.wordCountDict.items():
