@@ -5,26 +5,28 @@
 from flask import Flask, request, redirect, render_template
 from retreiver import Retreiver
 
-
+#Creating a Retreiver object to load the index JSON and have it in a data structure to use
 r = Retreiver()
 print("Loading Index....")
 r.open_inverted_index("invertedIndex.json")
 print("Ready for use")
 
+#Creating a Flask App for backend and Front end Integration
 app = Flask(__name__)
 @app.route('/')
-def index():
+def index(): #Renders the homepage
     return render_template('index.html')
 
 
+
 @app.route('/results', methods = ['POST'])
-def results():
+def results(): #Renders the Results page
 	query = request.form['searchTerm']
-	print(query)
+	#print(query)
 	l = r.list_top_urls(query)
 	links = l[0]
 	length = l[1]
-	if length < 20:
+	if length < 20: #Adding blank spaces in the list upto 20 to standardize the print results if the ULRs are less than 20
 		for i in range(length, 20):
 			links.append('')
 	return render_template('results.html', res1 = links[0], res2 = links[1], res3 = links[2], res4 = links[3], res5 = links[4], res6 = links[5], \

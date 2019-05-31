@@ -31,15 +31,18 @@ class Inverter:
         self.h4key = dict()
         
     def calculate_word_count(self, url, url_text):
+        ''' This function takes in a url and the html text component and creates tokens and counts the number of time
+            a token appeared in the URL
+            TF in TF-IDF'''
         wordCountDict = defaultdict(int) #count number of words, used to calculate td-idf
         total_num_words = 0 #used to calculate tf-idf
         
         tokenized = re.split('[^a-zA-z0-9]+', url_text)
         for token in tokenized:
             if token not in self.stopWords:
-                token = token.lower()
-                token = self.lemmatizer.lemmatize(token)
-                token = self.porterStemmer.stem(token)
+                token = token.lower() # Changing to lowercase
+                token = self.lemmatizer.lemmatize(token) #Lemmatizing each token
+                token = self.porterStemmer.stem(token) #Stemming each token
                 total_num_words += 1
 
                 if token in self.wordCountDict and url in self.wordCountDict[token]:
@@ -48,13 +51,21 @@ class Inverter:
                     self.wordCountDict[token][url] = 1
 
     def calculate_document_frequency(self):
+        '''Calculating how many documents each token occors in
+            IDF in TF_IDF'''
         for term, dictionary in self.wordCountDict.items():
             self.documentFrequencyDict[term] = len(dictionary)
 
     def calculate_tfidf(self):
+        ''' Takes the TF and IDF to combine them to create the TF-IDF score
+            H1 and Title adds extra 5points to weight
+            H2 adds extra 4points to weight
+            H3 adds extra 3points to weight
+            H4 adds extra 2points to weight'''
         print(self.corpus.get_corpus_length())
         for term, dictionary in self.wordCountDict.items():
             for url, freq in dictionary.items():
+                # Weight = (1+log(TF) * log(corpus_size/IDF))
                 weight = (1 + math.log(freq)) * (math.log(self.corpus.get_corpus_length()/self.documentFrequencyDict[term]))
                 self.tfidfDict[term][url] = weight
                 if term in self.KEYWORDS and url in self.KEYWORDS[term]:
@@ -66,17 +77,8 @@ class Inverter:
                 if term in self.h4key and url in self.h4key[term]:
                     self.tfidfDict[term][url] += 2
 
-    def fetch_best_urls(self, query):
-        url_scores = defaultdict(float)
-        tokenized = re.split('[^a-zA-z0-9]+', query)
-        for token in tokenized:
-            if token in self.tfidfDict.keys():
-                for url, tfidf in self.tfidfDict[token].items():
-                    url_scores[url] += tfidf
-
-        url_scores = sorted(url_scores.items(), key = lambda x: x[1], reverse = True)
-        return url_scores
     def fix_keywords(self, keyword_string):
+        '''Takes in a string and breaks it into tokens and standardizes them and returns a set of these tokens'''
         l = set()
         s = re.sub(r'[^a-zA-Z0-9]+', ' ', keyword_string)
         s = s.split(' ')
@@ -91,6 +93,8 @@ class Inverter:
         return l
         
     def get_html_text(self, url, url_file):
+        '''Takes a URL and the local path to the file, extracts H1, H2, h3, h4, Title and All the html tags and
+            saves the data to respective dictionaries and datastructure to be tokenized and used to create index later'''
         f = open(url_file, "rb")
         content = f.read()
         soup = BeautifulSoup(content, "lxml")
@@ -163,6 +167,9 @@ class Inverter:
         return (url, url_text)
 
     def start_indexing(self):
+        '''
+            Reads the bookkeeping JSON and creates index for each of the URLs in the JSON file
+        '''
         #using good.txt from WebCrawler instead of going through the whole corpus
         counter = 0
         # The corpus directory name
@@ -184,15 +191,18 @@ class Inverter:
                 self.calculate_word_count(url, url_text)
     
     def get_wordCountDict(self):
+        '''Prints TF for each term'''
         for key, val in self.wordCountDict.items():
             docFreqPair = sorted(val.items(), key = lambda x: x[1], reverse = True)
             print(key, docFreqPair)
 
     def get_documentFrequencyDict(self):
+        '''Prints the IDF for each term'''
         for key, val in self.documentFrequencyDict.items():
             print(key, val)
 
     def get_tfidfDict(self):
+        '''Returns the TF-IDF for each term in a Dictionary'''
         for key, val in self.tfidfDict.items():
             docFreqPair = sorted(val.items(), key = lambda x: x[1], reverse = True)
             #print(key, docFreqPair, "\n\n")
@@ -204,8 +214,6 @@ if __name__ == '__main__':
     i.calculate_document_frequency()
     i.calculate_tfidf()
     inverted = i.get_tfidfDict()
-    best_urls = i.fetch_best_urls("Informatics")
-    print(best_urls)
-    with open('invertedIndex.json', 'w') as f:
+    with open('invertedIndex.json', 'w') as f: #saving the TF-IDF dict in a JSON file for later use
         json.dump(inverted, f)
 

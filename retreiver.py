@@ -22,12 +22,17 @@ class Retreiver:
         self.porterStemmer = PorterStemmer()
 
     def open_inverted_index(self, filename):
+        '''Reads a inverted index JSON file and stores it a dictionary'''
         json_file = open(filename)
         json_str = json_file.read()
         json.dict = json.loads(json_str)
         self.invertedIndex = json.dict
 
     def retreive_urls(self, query):
+        '''
+            Given a text query, it finds the relevant URLs in the index and returns a list of top URLs in a
+            decreasing order of TF-IDF scores for each URL for the Query
+        '''
         url_scores = defaultdict(float)
         tokenized = re.split('[^a-zA-z0-9]+', query)
         for token in tokenized:
@@ -43,6 +48,10 @@ class Retreiver:
         return url_scores
 
     def get_top_urls(self, sorted_urls, max = 20):
+        '''
+            Prints the top URLs that are retrived with thier TF-IDF values
+            Defaults to top 20 urls but can be changed
+        '''
         urlLength = len(sorted_urls)
         if urlLength < max:
             print(sorted_urls)
@@ -56,6 +65,10 @@ class Retreiver:
                     break
 
     def list_top_urls(self, query):
+        '''
+            Retriever API, Used for extrenal Programs
+            This function takes in a Query and returns a 2-Tuple containing list of top 20 URLs and the length of the list 
+        '''
         top_urls = []
         max_urls = 20
         sorted_urls = self.retreive_urls(query)
@@ -76,6 +89,9 @@ class Retreiver:
         
 
     def queries(self):
+        '''
+            A UI function that asks a user for an input query and prints top 20 URLs on the terminal
+        '''
         while True:
             s = str(input("Input Search Query\n"))
             if s == '':
