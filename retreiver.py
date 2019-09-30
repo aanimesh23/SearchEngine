@@ -7,6 +7,8 @@ from corpus import Corpus
 from nltk.corpus import stopwords
 from nltk.stem import WordNetLemmatizer, PorterStemmer
 from collections import defaultdict
+import VoiceRecognition as vr
+import speech_recognition as sr
 import re
 
 class Retreiver:
@@ -92,8 +94,14 @@ class Retreiver:
         '''
             A UI function that asks a user for an input query and prints top 20 URLs on the terminal
         '''
+        recognizer = sr.Recognizer()
+        microphone = sr.Microphone()
         while True:
-            s = str(input("Input Search Query\n"))
+            print("Listing to a voice Query...")
+            string = vr.recognize_speech_from_mic(recognizer, microphone)
+            s = string["transcription"]
+            print(s)
+#            s = str(input("Input Search Query\n"))
             if s == '':
                 continue
             if s == ' ':
